@@ -2,6 +2,7 @@ package dec
 
 import (
 	"database/sql/driver"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -28,7 +29,7 @@ func (d D2) String() string {
 	if f == float64(0) {
 		return "-"
 	}
-	return formatNumber(f, 2)
+	return formatNumber(f, 2, SeparadorDeMiles, SeparadorDecimal)
 
 }
 
@@ -59,6 +60,30 @@ func (d *D2) Scan(value interface{}) error {
 	return nil
 }
 
+// MarshalJSON es para tomar un D2 y pasarlo a JSON.
+func (d D2) MarshalJSON() (by []byte, err error) {
+	by = []byte(strconv.FormatFloat(d.Float(), 'f', -1, 64))
+	return by, nil
+}
+
+// UnmarshalJSON Es para pasar un Fecha => JSON
+func (d *D2) UnmarshalJSON(input []byte) error {
+	texto := string(input)
+
+	if texto == "null" || texto == `""` {
+		*d = 0
+		return nil
+	}
+
+	fl, err := strconv.ParseFloat(texto, 64)
+	if err != nil {
+		return errors.Errorf("no se pudo convertir %v a float64", texto)
+	}
+	*d = NewD2(fl)
+
+	return nil
+}
+
 // ExportarParaCSV sirve para cuando se debe generar un string con el número
 // generalmete para archivos CSV.
 func (d D2) ExportarParaCSV(
@@ -69,7 +94,7 @@ func (d D2) ExportarParaCSV(
 	llenarCon string,
 	alineadoDerecha bool) (rtdo string) {
 
-	texto := formatNumber(float64(d)/100.0, cantidadDecimales)
+	texto := formatNumber(float64(d)/100.0, cantidadDecimales, separadorMiles, separadorDecimal)
 
 	// Si el texto es más largo, lo recorto
 	if len(texto) > largo {

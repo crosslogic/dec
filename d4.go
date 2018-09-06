@@ -24,7 +24,7 @@ func (d D4) StringDos() string {
 	if f == float64(0) {
 		return "-"
 	}
-	return formatNumber(f, 2)
+	return formatNumber(f, 2, SeparadorDeMiles, SeparadorDecimal)
 }
 
 // Float devuelve el número como float con la coma donde corresponde.
@@ -39,7 +39,7 @@ func (d D4) String() string {
 	if f == float64(0) {
 		return "-"
 	}
-	return formatNumber(f, 4)
+	return formatNumber(f, 4, SeparadorDeMiles, SeparadorDecimal)
 }
 
 // Value satisface la interface de package sql, para persistir el núnero como debe.

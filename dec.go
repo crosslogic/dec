@@ -208,7 +208,7 @@ func toFixed(num float64, precision int) float64 {
 	return float64(round(num*output)) / output
 }
 
-func formatNumber(value float64, precision int) string {
+func formatNumber(value float64, precision int, separadorMiles, separadorDecimal string) string {
 	var x string
 	x = fmt.Sprintf(fmt.Sprintf("%%.%df", precision), value)
 	return formatNumberString(x, precision, SeparadorDeMiles, SeparadorDecimal)
