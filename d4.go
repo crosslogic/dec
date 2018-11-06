@@ -2,6 +2,7 @@ package dec
 
 import (
 	"database/sql/driver"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -59,6 +60,30 @@ func (d *D4) Scan(value interface{}) error {
 		return errors.Errorf("al intentar Scan en un D2. Se esperaba un int, se obtuvo un %t", value)
 	}
 	*d = D4(entero)
+
+	return nil
+}
+
+// MarshalJSON es para tomar un D2 y pasarlo a JSON.
+func (d D4) MarshalJSON() (by []byte, err error) {
+	by = []byte(strconv.FormatFloat(d.Float(), 'f', -1, 64))
+	return by, nil
+}
+
+// UnmarshalJSON Es para pasar un Fecha => JSON
+func (d *D4) UnmarshalJSON(input []byte) error {
+	texto := string(input)
+
+	if texto == "null" || texto == `""` {
+		*d = 0
+		return nil
+	}
+
+	fl, err := strconv.ParseFloat(texto, 64)
+	if err != nil {
+		return errors.Errorf("no se pudo convertir %v a float64", texto)
+	}
+	*d = NewD4(fl)
 
 	return nil
 }

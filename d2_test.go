@@ -47,7 +47,7 @@ func TestSumarD2(t *testing.T) {
 	}
 }
 
-func TestUnmarshalJSON(t *testing.T) {
+func TestD2UnmarshalJSON(t *testing.T) {
 
 	type prueba struct {
 		D2    D2
@@ -85,7 +85,7 @@ func TestUnmarshalJSON(t *testing.T) {
 	}
 }
 
-func TestMarshalJSON(t *testing.T) {
+func TestD2MarshalJSON(t *testing.T) {
 	type item struct {
 		Monto D2
 	}
