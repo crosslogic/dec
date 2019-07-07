@@ -53,7 +53,7 @@ func (d *D2) Scan(value interface{}) error {
 	}
 	entero, ok := value.(int64)
 	if !ok {
-		return errors.Errorf("al intentar Scan en un D2. Se esperaba un int64, se obtuvo un %t", value)
+		return errors.Errorf("al intentar Scan en un D2. Se esperaba un int64, se obtuvo un %T", value)
 	}
 	*d = D2(entero)
 
