@@ -135,7 +135,7 @@ func describirDecena(n int) string {
 
 	switch {
 	case n < 10:
-		unDigito(n)
+		return unDigito(n)
 	case n == 10:
 		return "DIEZ "
 	case n == 11:

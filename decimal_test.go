@@ -76,6 +76,10 @@ func TestALetras(t *testing.T) {
 
 	testData := []datos{
 		{
+			N:        3,
+			Expected: "PESOS TRES.-",
+		},
+		{
 			N:        12,
 			Expected: "PESOS DOCE.-",
 		},
@@ -90,6 +94,10 @@ func TestALetras(t *testing.T) {
 		{
 			N:        1023,
 			Expected: "PESOS MIL VEINTITRES.-",
+		},
+		{
+			N:        9003,
+			Expected: "PESOS NUEVE MIL TRES.-",
 		},
 		{
 			N:        14889,
