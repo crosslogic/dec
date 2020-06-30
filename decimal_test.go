@@ -2,6 +2,8 @@ package dec
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestToFixed(t *testing.T) {
@@ -66,30 +68,63 @@ func TestDescribirDecena(t *testing.T) {
 }
 
 func TestALetras(t *testing.T) {
-	var n float64
-	var letras string
 
-	n = 824.32
-	letras = enPalabras(n, "PESOS")
-	if letras != "PESOS OCHOCIENTOS VEINTICUATRO C/32/100.-" {
-		t.Error("Dio: " + letras)
+	type datos struct {
+		N        float64
+		Expected string
 	}
 
-	n = 738111.99
-	letras = enPalabras(n, "PESOS")
-	if letras != "PESOS SETECIENTOS TREINTA Y OCHO MIL CIENTO ONCE C/99/100.-" {
-		t.Error("Dio: " + letras)
+	testData := []datos{
+		{
+			N:        12,
+			Expected: "PESOS DOCE.-",
+		},
+		{
+			N:        122,
+			Expected: "PESOS CIENTO VEINTIDOS.-",
+		},
+		{
+			N:        824.32,
+			Expected: "PESOS OCHOCIENTOS VEINTICUATRO C/32/100.-",
+		},
+		{
+			N:        1023,
+			Expected: "PESOS MIL VEINTITRES.-",
+		},
+		{
+			N:        14889,
+			Expected: "PESOS CATORCE MIL OCHOCIENTOS OCHENTA Y NUEVE.-",
+		},
+		{
+			N:        18777.91,
+			Expected: "PESOS DIECIOCHO MIL SETECIENTOS SETENTA Y SIETE C/91/100.-",
+		},
+		{
+			N:        738111.99,
+			Expected: "PESOS SETECIENTOS TREINTA Y OCHO MIL CIENTO ONCE C/99/100.-",
+		},
+		{
+			N:        421738111.99,
+			Expected: "PESOS CUATROCIENTOS VEINTIUN MILLONES SETECIENTOS TREINTA Y OCHO MIL CIENTO ONCE C/99/100.-",
+		},
+		{
+			N:        999999999.99,
+			Expected: "PESOS NOVECIENTOS NOVENTA Y NUEVE MILLONES NOVECIENTOS NOVENTA Y NUEVE MIL NOVECIENTOS NOVENTA Y NUEVE C/99/100.-",
+		},
 	}
 
-	n = 421738111.99
-	letras = enPalabras(n, "PESOS")
-	if letras != "PESOS CUATROCIENTOS VEINTIUN MILLONES SETECIENTOS TREINTA Y OCHO MIL CIENTO ONCE C/99/100.-" {
-		t.Error("Dio: " + letras)
+	for _, v := range testData {
+		actual := enPalabras(v.N, "PESOS")
+		assert.Equal(t, v.Expected, actual)
 	}
+}
 
-	n = 999999999.99
-	letras = enPalabras(n, "PESOS")
-	if letras != "PESOS NOVECIENTOS NOVENTA Y NUEVE MILLONES NOVECIENTOS NOVENTA Y NUEVE MIL NOVECIENTOS NOVENTA Y NUEVE C/99/100.-" {
-		t.Error("Dio: " + letras)
+func TestCorrerComa(t *testing.T) {
+	out := correrComa(543, 2)
+	assert.Equal(t, 5, out)
+
+	{
+		out := correrComa(543, -2)
+		assert.Equal(t, 54300, out)
 	}
 }

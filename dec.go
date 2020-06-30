@@ -29,20 +29,37 @@ func enPalabras(monto float64, moneda string) string { // 824,32
 	var decsFloat = (monto - enterosFloat) * 100 // 0,3199999999998
 	var decimales = int(toFixed(decsFloat, 0))   //32
 
-	return moneda + " " + aLetras(int(enterosFloat)) + describirCentavos(decimales)
+	return moneda + " " + strings.Trim(aLetras(int(enterosFloat)), " ") + describirCentavos(decimales)
+}
+func correrComa(numero, lugares int) int {
+	enFl := float64(numero) / math.Pow(10, float64(lugares))
+	return int(math.Trunc(enFl))
 }
 
 // Devuelve el numero que se ingresa en letras.
 func aLetras(n int) string {
 
-	var enteros = int(n)
 	var concat string
-	if enteros < 1000 {
-	}
 	switch {
-	case enteros < 1000:
-		concat += describirCentena(enteros)
-		concat += describirDecena(enteros)
+
+	case n < 100:
+		return describirDecena(n)
+
+	case n < 1000:
+		concat += describirCentena(n)
+		concat += describirDecena(n)
+		return concat
+
+	case n < 10000:
+		corrido := correrComa(n, 3)
+		concat += miles(corrido)
+		concat += aLetras(n - corrido*1000)
+		return concat
+
+	case n < 100000:
+		corrido := correrComa(n, 3)
+		concat += describirDecena(corrido) + "MIL "
+		concat += aLetras(n - corrido*1000)
 		return concat
 	case n < 1000*1000: //  542325
 
@@ -70,6 +87,15 @@ func aLetras(n int) string {
 	}
 	return ""
 }
+func miles(n int) string {
+	switch n {
+	case 1:
+		return "MIL "
+	}
+	return unDigito(n) + "MIL "
+}
+
+// Describe desde 100 a 900
 func describirCentena(n int) string {
 	switch {
 	case n < 100:
@@ -98,6 +124,7 @@ func describirCentena(n int) string {
 	return ""
 }
 
+// Describe desde 0 a 99
 func describirDecena(n int) string {
 	if n >= 100 { // 124 => Le saco el 100 y que quede 24
 		fl := float64(n) / 100             // me da 1,24
@@ -194,7 +221,10 @@ func unDigito(n int) string {
 }
 
 func describirCentavos(n int) string {
-	return "C/" + strconv.Itoa(n) + "/100.-"
+	if n == 0 {
+		return ".-"
+	}
+	return " C/" + strconv.Itoa(n) + "/100.-"
 }
 
 func round(num float64) int {
