@@ -20,6 +20,4 @@ Al funcionar con un int64 subyacente, no hay problemas para Marshal ni Unmarshal
 
 ## Dependencias
 
-La única dependencia que tiene es github.com/pkg/errors.
-
 Contribuciones bienvenidas.

@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,33 +45,28 @@ func TestD4UnmarshalJSON(t *testing.T) {
 	}
 
 	pruebas := []prueba{
-		prueba{
+		{
 			D4:    3524,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":0.3524}`),
 		},
-		prueba{
+		{
 			D4:    -1,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":-0.0001}`),
 		},
-		prueba{
+		{
 			D4:    9999999999,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":999999.9999}`),
 		},
-		prueba{
+		{
 			D4:    0,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":0}`),
 		},
 	}
-	for _, v := range pruebas {
+	for i, v := range pruebas {
 		res := struct{ Monto D4 }{}
 		err := json.NewDecoder(strings.NewReader(v.Texto)).Decode(&res)
-		if err != nil {
-			t.Error(errors.Wrapf(err, "al unmarshalizar %v", v.Texto))
-		}
-
-		if res.Monto != v.D4 {
-			t.Fatal(t, fmt.Sprintf("No se leyó correctamente `%v`. Se esperaba: `%v`, pero se obtuvo `%v`.", v.Texto, v.D4, res.Monto))
-		}
+		assert.Nil(t, err, "on index %v", i)
+		assert.Equal(t, res.Monto, v.D4, "on index %v", i)
 	}
 }
 
@@ -85,19 +79,19 @@ func TestD4MarshalJSON(t *testing.T) {
 		Texto string
 	}
 	pruebas := []prueba{
-		prueba{
+		{
 			Item:  item{D4(3524)},
 			Texto: fmt.Sprint(`{"Monto":0.3524}`, "\n"),
 		},
-		prueba{
+		{
 			Item:  item{D4(-1)},
 			Texto: fmt.Sprint(`{"Monto":-0.0001}`, "\n"),
 		},
-		prueba{
+		{
 			Item:  item{D4(9999999999)},
 			Texto: fmt.Sprint(`{"Monto":999999.9999}`, "\n"),
 		},
-		prueba{
+		{
 			Item:  item{D4(0)},
 			Texto: fmt.Sprint(`{"Monto":0}`, "\n"),
 		},
@@ -106,11 +100,7 @@ func TestD4MarshalJSON(t *testing.T) {
 		w := strings.Builder{}
 		err := json.NewEncoder(&w).Encode(v.Item)
 		texto := w.String()
-		if err != nil {
-			t.Error(t, errors.Wrap(err, "no se pudo marsahlizar"))
-		}
-		if texto != v.Texto {
-			t.Error(t, fmt.Sprintf("No se convirtió correctamente `%v`. Se esperaba: `%v`, pero se obtuvo `%v`.", v.Item, v.Texto, texto))
-		}
+		assert.Nil(t, err)
+		assert.Equal(t, v.Texto, texto)
 	}
 }

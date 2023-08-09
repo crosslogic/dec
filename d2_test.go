@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func TestD2CrearFloat(t *testing.T) {
@@ -55,19 +53,19 @@ func TestD2UnmarshalJSON(t *testing.T) {
 	}
 
 	pruebas := []prueba{
-		prueba{
+		{
 			D2:    3524,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":35.24}`),
 		},
-		prueba{
+		{
 			D2:    -1,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":-0.01}`),
 		},
-		prueba{
+		{
 			D2:    9999999999,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":99999999.99}`),
 		},
-		prueba{
+		{
 			D2:    0,
 			Texto: fmt.Sprintf("%v\n", `{"Monto":0}`),
 		},
@@ -76,11 +74,11 @@ func TestD2UnmarshalJSON(t *testing.T) {
 		res := struct{ Monto D2 }{}
 		err := json.NewDecoder(strings.NewReader(v.Texto)).Decode(&res)
 		if err != nil {
-			t.Error(errors.Wrapf(err, "al unmarshalizar %v", v.Texto))
+			t.Error(fmt.Errorf("al unmarshalizar %v", v.Texto))
 		}
 
 		if res.Monto != v.D2 {
-			t.Fatal(t, fmt.Sprintf("No se leyó correctamente `%v`. Se esperaba: `%v`, pero se obtuvo `%v`.", v.Texto, v.D2, res.Monto))
+			t.Fatalf("no se leyó correctamente `%v`. Se esperaba: `%v`, pero se obtuvo `%v`.", v.Texto, v.D2, res.Monto)
 		}
 	}
 }
@@ -116,7 +114,7 @@ func TestD2MarshalJSON(t *testing.T) {
 		err := json.NewEncoder(&w).Encode(v.Item)
 		texto := w.String()
 		if err != nil {
-			t.Error(t, errors.Wrap(err, "no se pudo marsahlizar"))
+			t.Error(t, fmt.Errorf("no se pudo marsahlizar: %w", err))
 		}
 		if texto != v.Texto {
 			t.Error(t, fmt.Sprintf("No se convirtió correctamente `%v`. Se esperaba: `%v`, pero se obtuvo `%v`.", v.Item, v.Texto, texto))

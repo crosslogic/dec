@@ -2,9 +2,8 @@ package dec
 
 import (
 	"database/sql/driver"
+	"fmt"
 	"strconv"
-
-	"github.com/pkg/errors"
 )
 
 // D2 sirve registros contables, tiene dos decimales.
@@ -51,13 +50,26 @@ func (d *D2) Scan(value interface{}) error {
 		*d = D2(0)
 		return nil
 	}
-	entero, ok := value.(int64)
-	if !ok {
-		return errors.Errorf("al intentar Scan en un D2. Se esperaba un int64, se obtuvo un %T", value)
-	}
-	*d = D2(entero)
 
-	return nil
+	{ // Era un entero?
+		entero, ok := value.(int64)
+		if ok {
+			*d = D2(entero)
+			return nil
+		}
+	}
+
+	{ // Era un float?
+		// OJO:  cuando se ejecutan operaciones puede que la DB devuelva
+		// una columna int como float entonces no dará error pero tendrá
+		// la coma incorrecta.
+		fl, ok := value.(float64)
+		if ok {
+			*d = NewD2(fl)
+			return nil
+		}
+	}
+	return fmt.Errorf("al intentar Scan en un D2. Se esperaba un int64, se obtuvo un %T", value)
 }
 
 // MarshalJSON es para tomar un D2 y pasarlo a JSON.
@@ -77,7 +89,7 @@ func (d *D2) UnmarshalJSON(input []byte) error {
 
 	fl, err := strconv.ParseFloat(texto, 64)
 	if err != nil {
-		return errors.Errorf("no se pudo convertir %v a float64", texto)
+		return fmt.Errorf("no se pudo convertir %v a float64", texto)
 	}
 	*d = NewD2(fl)
 
